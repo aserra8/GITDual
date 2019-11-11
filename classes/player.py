@@ -1,3 +1,4 @@
+import os
 from program import database
 import mysql.connector
 
@@ -36,14 +37,97 @@ class Player:
                 cursor.close()
                 dbcon.close()
 
+    @staticmethod
+    def delete_player(player_name):
+        dbcon = None
+        cursor = None
+        try:
+            dbcon = database.connectdb()
+            cursor = dbcon.cursor()
+
+            cursor.execute("DELETE FROM player WHERE player_name = '{}'".format(player_name))
+
+            dbcon.commit()
+
+            print("\nPlayer deleted successfully")
+            input("Enter a key to continue: ")
+
+        except mysql.connector.Error:
+            print("\nException while trying to delete player")
+
+        finally:
+            if dbcon.is_connected():
+                cursor.close()
+                dbcon.close()
+
+    @staticmethod
+    def modify_player(player_name, option, modification):
+        dbcon = None
+        cursor = None
+        try:
+            dbcon = database.connectdb()
+            cursor = dbcon.cursor()
+
+            if option == 1:
+                sql = "UPDATE player SET player_name = %s WHERE player_name = %s"
+                var = (modification, player_name)
+                cursor.execute(sql, var)
+            elif option == 2:
+                sql = "UPDATE player SET player_password = %s WHERE player_name = %s"
+                var = (modification, player_name)
+                cursor.execute(sql, var)
+            elif option == 3:
+                sql = "UPDATE player SET player_score = %s WHERE player_name = %s"
+                var = (modification, player_name)
+                cursor.execute(sql, var)
+
+            dbcon.commit()
+
+            print("\nPlayer modified successfully")
+            input("Enter a key to continue: ")
+
+        except mysql.connector.Error:
+            print("\nException while trying to modify player")
+
+        finally:
+            if dbcon.is_connected():
+                cursor.close()
+                dbcon.close()
+
+    @staticmethod
+    def check_player_name(player_name):
+        dbcon = None
+        cursor = None
+
+        try:
+            dbcon = database.connectdb()
+            cursor = dbcon.cursor()
+
+            cursor.execute("SELECT player_score FROM player WHERE player_name = '{}'".format(player_name))
+
+            row = cursor.fetchone()
+
+            if row is not None:
+                return True
+
+        except mysql.connector.Error:
+            print("Error trying to find player")
+            return True
+
+        finally:
+            if dbcon.is_connected():
+                cursor.close()
+                dbcon.close()
+
     # Method to check if player exists
-    def check_player(self):
+    @staticmethod
+    def check_player(player_name, player_password):
         dbcon = None
         cursor = None
 
         try:
             sql = "SELECT * FROM player WHERE player_name = %s AND player_password = %s"
-            val = (self.player_name, self.player_password)
+            val = (player_name, player_password)
 
             dbcon = database.connectdb()
 
@@ -109,5 +193,32 @@ class Player:
 
         finally:
             if dbcon.is_connected():
+                cursor.close()
+                dbcon.close()
+
+    @staticmethod
+    def list_players():
+        dbcon = None
+        cursor = None
+        try:
+            dbcon = database.connectdb()
+            cursor = dbcon.cursor()
+            cursor.execute("SELECT * FROM player")
+
+            result = cursor.fetchall()
+
+            os.system("cls")
+            print("{:<30}{:<30}{:>10}".format("USER ID", "PASSWORD", "SCORE"))
+            print(70 * "-")
+
+            for row in result:
+                print("{:<30}{:<30}{:>10}".format(row[0], row[1], row[2]))
+
+            print(70 * "-")
+
+        except mysql.connector.Error:
+            print("\nException while listing users")
+        finally:
+            if dbcon.is_connected:
                 cursor.close()
                 dbcon.close()

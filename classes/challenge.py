@@ -10,36 +10,6 @@ class Challenge:
         self.challenge_id = challenge_id
         self.challenge_description = challenge_description
 
-    # Method to list challenges
-    @staticmethod
-    def list_challenge_prova():
-        dbcon = None
-        cursor = None
-        try:
-            dbcon = database.connectdb()
-            cursor = dbcon.cursor()
-
-            cursor.execute("SELECT challenge_id FROM challenge")
-            result = cursor.fetchall()
-
-            counter = 1
-            for row in result:
-                if counter % 2 == 1:
-                    print("CHALLENGE", counter, "(CODE:", row[0], ")", end='')
-                else:
-                    print("\t\t\t\t\tCHALLENGE", counter, "(CODE", row[0], ")")
-                counter += 1
-
-            print()
-
-        except mysql.connector.Error:
-            print("\nException while connecting to the database")
-
-        finally:
-            if dbcon.is_connected():
-                cursor.close()
-                dbcon.close()
-
     @staticmethod
     def list_challenge():
         dbcon = None
@@ -52,10 +22,13 @@ class Challenge:
             result = cursor.fetchall()
 
             os.system("cls")
-            print("ID\t\t\t\tDESCRIPTION")
-            print(76 * "-")
+            print("{:<15}{:<50}".format("ID", "DESCRIPTION"))
+            print(65 * "-")
+
             for row in result:
-                print(row[0], "\t\t\t\t", row[1])
+                print("{:<15}{:<50}".format(row[0], row[1]))
+
+            print(65 * "-")
 
         except mysql.connector.Error:
             print("\nException while listing questions")
@@ -105,7 +78,7 @@ class Challenge:
             input("Enter a key to continue: ")
 
         except mysql.connector.Error:
-            print("\nException while trying to modify question")
+            print("\nException while trying to modify challenge")
 
         finally:
             if dbcon.is_connected():

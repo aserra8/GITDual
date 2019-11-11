@@ -29,9 +29,10 @@ class Question:
                 choice = 0
                 while True:
                     os.system("cls")
-                    print("\t\t\t\tQUESTION\t\t\tPOINTS:", row[4], "\n", 74 * "-")
-                    print("\n " + row[2])
-                    print("\n", 74 * "-" + "\n")
+                    print("{:<64}{:>8}{:>3}".format("QUESTION", "POINTS: ", row[4]))
+                    print(75 * "-")
+                    print("\n" + row[2] + "\n")
+                    print(75 * "-" + "\n")
 
                     user_answer = input("ANSWER: ")
                     if user_answer.casefold() == row[3].casefold():
@@ -82,13 +83,17 @@ class Question:
             result = cursor.fetchall()
 
             os.system("cls")
-            print("ID\t\tCONTENT\t\t\t\tSCORE")
-            print(76 * "-")
+            print("{:<15}{:<75}{:>5}".format("ID", "CONTENT", "SCORE"))
+            print(95 * "-")
+
             for row in result:
-                print(row[0], "\t\t", row[2], "\t\t", row[4])
+                print("{:<15}{:<75}{:>5}".format(row[0], row[2], row[4]))
+
+            print(95 * "-")
 
         except mysql.connector.Error:
             print("\nException while listing questions")
+
         finally:
             if dbcon.is_connected:
                 cursor.close()

@@ -10,24 +10,22 @@ def show_player_leaderboard():
     cursor = None
 
     try:
-        sql = "SELECT player_name, player_score FROM player ORDER BY player_score DESC"
-
         dbcon = database.connectdb()
-
         cursor = dbcon.cursor()
-        cursor.execute(sql)
+        cursor.execute("SELECT player_name, player_score FROM player ORDER BY player_score DESC")
 
         result = cursor.fetchall()
 
         os.system("cls")
-        print("\nPOSITION\t\t\tTEAM NAME\t\t\t\tSCORE")
-        print(76 * "-")
+        print("{:<20}{:<40}{:>15}".format("POSITION", "TEAM NAME", "SCORE"))
+        print(75 * "-")
+
         for row in result:
             if row[0] != "ADMIN":
                 counter += 1
-                print(counter, "\t\t\t\t", row[0], "\t\t\t\t\t", row[1])
-        print(76 * "-")
+                print("{:<20}{:<40}{:>15}".format(counter, row[0], row[1]))
 
+        print(75 * "-")
         input("\nEnter a key to continue: ")
 
     except mysql.connector.Error:
