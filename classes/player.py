@@ -1,20 +1,17 @@
 import os
-from program import database
 import mysql.connector
+from program import database
 
 
 class Player:
-    # Constructor with player atributes
     def __init__(self, player_name, player_password):
         self.player_name = player_name
         self.player_password = player_password
         self.player_score = 0
 
-    # Method to add player to the database
     def add_player(self):
         dbcon = None
         cursor = None
-
         try:
             sql = "INSERT INTO player VALUES(%s, %s, %s)"
             val = (self.player_name, self.player_password, self.player_score)
@@ -25,9 +22,9 @@ class Player:
             cursor.execute(sql, val)
 
             dbcon.commit()
-            cursor.close()
-            dbcon.close()
+
             print("\nPlayer added successfully")
+            input("Enter a key to continue: ")
 
         except mysql.connector.Error:
             print("\nError trying to add player")
@@ -98,7 +95,6 @@ class Player:
     def check_player_name(player_name):
         dbcon = None
         cursor = None
-
         try:
             dbcon = database.connectdb()
             cursor = dbcon.cursor()
@@ -119,12 +115,10 @@ class Player:
                 cursor.close()
                 dbcon.close()
 
-    # Method to check if player exists
     @staticmethod
     def check_player(player_name, player_password):
         dbcon = None
         cursor = None
-
         try:
             sql = "SELECT * FROM player WHERE player_name = %s AND player_password = %s"
             val = (player_name, player_password)
@@ -152,7 +146,6 @@ class Player:
     def get_player_score(current_player):
         dbcon = None
         cursor = None
-
         try:
             dbcon = database.connectdb()
             cursor = dbcon.cursor()
@@ -171,24 +164,28 @@ class Player:
                 cursor.close()
                 dbcon.close()
 
-    # Method to update user score
     @staticmethod
-    def update_player_score(points, current_player):
+    def update_player_score(points, current_player, option):
         dbcon = None
         cursor = None
-
         try:
-            sql = "UPDATE player SET player_score = player_score + %s WHERE player_name = %s"
-            val = (points, current_player.player_name)
-
             dbcon = database.connectdb()
             cursor = dbcon.cursor()
 
-            cursor.execute(sql, val)
+            if option == 0:
+                sql = "UPDATE player SET player_score = player_score + %s WHERE player_name = %s"
+                val = (points, current_player.player_name)
+                cursor.execute(sql, val)
+            else:
+                if not Player.get_player_score(current_player) == 0:
+                    sql = "UPDATE player SET player_score = player_score - ((%s * 5)/100) WHERE player_name = %s"
+                    val = (points, current_player.player_name)
+                    cursor.execute(sql, val)
+
             dbcon.commit()
 
         except mysql.connector.Error:
-            print("Error trying to find player")
+            print("Error trying to update player score")
             return True
 
         finally:

@@ -2,7 +2,6 @@ import mysql
 import mysql.connector
 
 
-# Function to connect to database
 def connectdb():
     try:
         dbconnection = mysql.connector.connect(

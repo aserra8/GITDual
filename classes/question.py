@@ -4,9 +4,7 @@ from classes import player
 from program import database
 
 
-# Class to store questions data
 class Question:
-    # Constructor with questions atributes
     def __init__(self, question_challenge_id, question_content, question_answer, question_score):
         self.question_challenge_id = question_challenge_id
         self.question_content = question_content
@@ -27,44 +25,57 @@ class Question:
 
             for row in result:
                 choice = 0
-                while True:
-                    os.system("cls")
-                    print("{:<64}{:>8}{:>3}".format("QUESTION", "POINTS: ", row[4]))
-                    print(75 * "-")
-                    print("\n" + row[2] + "\n")
-                    print(75 * "-" + "\n")
-
-                    user_answer = input("ANSWER: ")
-                    if user_answer.casefold() == row[3].casefold():
-                        points = row[4]
-                        player.Player.update_player_score(points, current_player)
+                if not Question.__check_completed_question(row[0], current_player.player_name):
+                    while True:
                         os.system("cls")
-                        print(30 * "-", "CORRECT ANSWER", 30 * "-")
-                        print("\nQuestion points: ", row[4])
-                        print("Current team score: ", player.Player.get_player_score(current_player))
-                        input("\nEnter a key to continue: ")
-                        break
-                    else:
-                        while True:
-                            try:
-                                choice = int(input("\nIncorrect answer. Continue? 1 = YES / 2 = NO: "))
-                                if choice == 1 or choice == 2:
-                                    break
-                                print("\nIncorrect option")
-                            except ValueError:
-                                print("\nIncorrect format")
+                        print("{:<64}{:>8}{:>3}".format("QUESTION", "POINTS: ", row[4]))
+                        print(75 * "-")
+                        print("\n" + row[2] + "\n")
+                        print(75 * "-" + "\n")
 
-                    if choice == 2:
-                        break
+                        user_answer = input("ANSWER: ")
+                        points = row[4]
+                        if user_answer.casefold() == row[3].casefold():
+                            if not Question.__check_completed_question(row[0], current_player.player_name):
+                                player.Player.update_player_score(points, current_player, 0)
+                                Question.__add_completed_question(row[0], current_player.player_name)
+                                os.system("cls")
+                                print(30 * "-", "CORRECT ANSWER", 30 * "-")
+                                print("\nQuestion points: ", row[4])
+                                print("Current team score: ", player.Player.get_player_score(current_player))
+                                input("\nEnter a key to continue: ")
+                                break
+                            else:
+                                print("\nQuestion has already been completed")
+                                input("\nEnter a key to continue: ")
+                        else:
+                            while True:
+                                try:
+                                    player.Player.update_player_score(points, current_player, 1)
+                                    os.system("cls")
+                                    print(29 * "-", "INCORRECT ANSWER", 29 * "-")
+                                    print("\nPenalty points: -{}".format(round((row[4]*5)/100)))
+                                    print("Current team score:", player.Player.get_player_score(current_player))
+                                    choice = int(input("\nIncorrect answer. Continue? 1 = YES / 2 = NO: "))
+                                    if choice == 1 or choice == 2:
+                                        break
+                                    print("\nIncorrect option")
+                                except ValueError:
+                                    print("\nIncorrect format")
 
+                        if choice == 2:
+                            break
+                if choice == 2:
+                    break
             if choice != 2:
                 os.system("cls")
-                print("\t\t\tCHALLENGE COMPLETED\n", 74 * "-")
+                print("{:>50}".format("CHALLENGE COMPLETED"))
+                print(75 * "-")
                 input("\nEnter a key to continue: ")
 
         except mysql.connector.Error:
             print("\nException trying to find questions")
-            return True
+            input("Enter a key to continue: ")
 
         finally:
             if dbcon.is_connected():
@@ -83,16 +94,17 @@ class Question:
             result = cursor.fetchall()
 
             os.system("cls")
-            print("{:<15}{:<75}{:>5}".format("ID", "CONTENT", "SCORE"))
-            print(95 * "-")
+            print("{:<10}{:<75}{:30}{:>5}".format("ID", "CONTENT", "ANSWER", "SCORE"))
+            print(120 * "-")
 
             for row in result:
-                print("{:<15}{:<75}{:>5}".format(row[0], row[2], row[4]))
+                print("{:<10}{:<75}{:30}{:>5}".format(row[0], row[2], row[3], row[4]))
 
-            print(95 * "-")
+            print(120 * "-")
 
         except mysql.connector.Error:
             print("\nException while listing questions")
+            input("Enter a key to continue: ")
 
         finally:
             if dbcon.is_connected:
@@ -127,6 +139,7 @@ class Question:
 
         except mysql.connector.Error:
             print("\nException while trying to modify question")
+            input("Enter a key to continue: ")
 
         finally:
             if dbcon.is_connected():
@@ -141,6 +154,8 @@ class Question:
             dbcon = database.connectdb()
             cursor = dbcon.cursor()
 
+            cursor.execute("DELETE FROM question_completed WHERE question_completed_question_id = '{}'"
+                           .format(question_id))
             cursor.execute("DELETE FROM question WHERE question_id = '{}'".format(question_id))
 
             dbcon.commit()
@@ -148,15 +163,38 @@ class Question:
             print("\nQuestion deleted successfully")
             input("Enter a key to continue: ")
 
-        except mysql.connector.Error:
-            print("\nException while trying to delete question")
+        except mysql.connector.Error as ex:
+            print("\nException while trying to delete question: '{}'".format(ex))
+            input("Enter a key to continue: ")
 
         finally:
             if dbcon.is_connected():
                 cursor.close()
                 dbcon.close()
 
-    # Method to add question to the database
+    @staticmethod
+    def __add_completed_question(question_id, player_name):
+        dbcon = None
+        cursor = None
+        try:
+            dbcon = database.connectdb()
+            cursor = dbcon.cursor()
+
+            sql = "INSERT INTO question_completed VALUES(%s, %s)"
+            var = (question_id, player_name)
+
+            cursor.execute(sql, var)
+            dbcon.commit()
+
+        except mysql.connector.Error:
+            print("\nError trying to add question")
+            input("Enter a key to continue: ")
+
+        finally:
+            if dbcon.is_connected():
+                cursor.close()
+                dbcon.close()
+
     def add_question(self):
         dbcon = None
         cursor = None
@@ -183,13 +221,18 @@ class Question:
                 dbcon.close()
 
     @staticmethod
-    def check_question(question_id):
+    def __check_completed_question(question_id, player_name):
         dbcon = None
         cursor = None
         try:
             dbcon = database.connectdb()
             cursor = dbcon.cursor()
-            cursor.execute("SELECT * FROM question WHERE question_id = '{}'".format(question_id))
+
+            sql = ("SELECT * FROM question_completed WHERE question_completed_question_id = %s AND "
+                   "question_completed_player_name = %s")
+            var = (question_id, player_name)
+
+            cursor.execute(sql, var)
 
             row = cursor.fetchone()
 
@@ -198,7 +241,33 @@ class Question:
 
         except mysql.connector.Error:
             print("\nException while trying to find question")
-            return True
+            input("Enter a key to continue: ")
+
+        finally:
+            if dbcon.is_connected():
+                cursor.close()
+                dbcon.close()
+
+    @staticmethod
+    def check_question(question_id, challenge_id):
+        dbcon = None
+        cursor = None
+        try:
+            dbcon = database.connectdb()
+            cursor = dbcon.cursor()
+
+            sql = "SELECT * FROM question WHERE question_id = %s AND question_challenge_id = %s"
+            var = (question_id, challenge_id)
+            cursor.execute(sql, var)
+
+            row = cursor.fetchone()
+
+            if row is not None:
+                return True
+
+        except mysql.connector.Error:
+            print("\nException while trying to find question")
+            input("Enter a key to continue: ")
 
         finally:
             if dbcon.is_connected():

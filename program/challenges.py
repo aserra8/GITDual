@@ -1,6 +1,6 @@
 import os
-from classes import question, challenge, getinput
 from program import questions
+from classes import question, challenge, getinput
 
 
 def show_challenges_list(current_player):
@@ -21,9 +21,7 @@ def show_challenges_list(current_player):
         input("Enter a key to continue: ")
 
 
-# Function to check if challenge ID already exists
 def enter_existing_challenge():
-
     challenge.Challenge.list_challenge()
     while True:
         try:
@@ -67,7 +65,6 @@ def delete_existing_challenge():
 
 
 def modify_existing_challenge():
-
     challenge.Challenge.list_challenge()
     try:
         challenge_id = int(input("\nEnter challenge ID: "))
@@ -93,7 +90,6 @@ def modify_existing_challenge():
         input("Enter a key to continue: ")
 
 
-# Function to add a new challenge ID
 def add_new_challenge():
     os.system("cls")
     print(30 * "-", "NEW CHALLENGE", 30 * "-")
@@ -136,7 +132,7 @@ def show_challenge_options():
         print("5. GO BACK")
         print(79 * "-")
 
-        choice = getinput.getinput_between(1, 5)
+        choice = getinput.int_input_between(1, 5)
 
         if choice == 1:
             challenge_id = enter_existing_challenge()

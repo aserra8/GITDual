@@ -1,15 +1,13 @@
 import os
 from classes import question, challenge, getinput
-from program import challenges
 
 
-# TODO (BUG) Delete and modify allow to select questions from other challenges!!!
 def delete_existing_question(challenge_id):
     if challenge.Challenge.contains_questions(challenge_id):
         question.Question.list_questions(challenge_id)
         try:
             question_id = int(input("\nEnter question ID: "))
-            if not question.Question.check_question(question_id):
+            if not question.Question.check_question(question_id, challenge_id):
                 print("\nIncorrect question ID")
                 input("Enter a key to continue: ")
             else:
@@ -30,42 +28,28 @@ def modify_existing_question(challenge_id):
         question.Question.list_questions(challenge_id)
         try:
             question_id = int(input("\nEnter question ID: "))
-            if question.Question.check_question(question_id):
+            if question.Question.check_question(question_id, challenge_id):
                 os.system("cls")
                 print(30 * "-", "MODIFY QUESTION", 30 * "-")
                 try:
-                    option = int(input("\nField to be changed: 1 = CONTENT / 2 = ANSWER / 3 = SCORE"))
+                    print("\nField to be changed: 1 = CONTENT / 2 = ANSWER / 3 = SCORE")
+                    option = int(input("Enter your choice: "))
                     if 1 <= option <= 3:
                         if option == 1:
-                            while True:
-                                modification = input("\nQuestion: ")
-                                if len(modification) < 5:
-                                    print("\nQuestion is too short")
-                                elif len(modification) > 75:
-                                    print("\nQuestion is too long")
-                                else:
-                                    break
+                            modification = getinput.string_input_between("Question", 5, 75)
                         elif option == 2:
-                            while True:
-                                modification = input("Answer: ")
-                                if modification == "":
-                                    print("\nAnswer is not valid")
-                                elif len(modification) > 30:
-                                    print("\nAnswer is too long")
-                                else:
-                                    break
+                            modification = getinput.string_input_between("Answer", 1, 30)
                         else:
                             while True:
                                 try:
-                                    modification = int(input("Score [100-500]: "))
-                                    if modification < 100:
-                                        print("\nScore is too low")
-                                    elif modification > 500:
-                                        print("\nScore is too high")
-                                    else:
+                                    modification = int(input("\nEnter score [100 - 500]: "))
+                                    if 100 <= modification <= 500:
                                         break
+                                    else:
+                                        print("\nScore is not valid")
                                 except ValueError:
                                     print("\nIncorrect format")
+
                         question.Question.modify_question(question_id, option, modification)
                     else:
                         print("\nIncorrect question ID")
@@ -81,37 +65,19 @@ def modify_existing_question(challenge_id):
             input("Enter a key to continue: ")
 
 
-# Function to add a new question to the database
 def add_new_question(challenge_id):
     os.system("cls")
     print(30 * "-", "NEW QUESTION", 30 * "-")
-    while True:
-        content = input("\nQuestion: ")
-        if len(content) < 5:
-            print("\nQuestion is too short")
-        elif len(content) > 75:
-            print("\nQuestion is too long")
-        else:
-            break
 
-    while True:
-        answer = input("Answer: ")
-        if answer == "":
-            print("\nAnswer is not valid")
-        elif len(answer) > 30:
-            print("\nAnswer is too long")
-        else:
-            break
-
+    content = getinput.string_input_between("Question", 5, 75)
+    answer = getinput.string_input_between("Answer", 1, 30)
     while True:
         try:
-            score = int(input("Score [100-500]: "))
-            if score < 100:
-                print("\nScore is too low")
-            elif score > 500:
-                print("\nScore is too high")
-            else:
+            score = int(input("\nEnter score [100 - 500]: "))
+            if 100 <= score <= 500:
                 break
+            else:
+                print("\nScore is not valid")
         except ValueError:
             print("\nIncorrect format")
 
@@ -130,7 +96,6 @@ def add_new_question(challenge_id):
             print("\nIncorrect format")
 
 
-# Function to show question menu
 def show_question_options(challenge_id):
     while True:
         os.system("cls")
@@ -138,10 +103,10 @@ def show_question_options(challenge_id):
         print("1. ADD NEW QUESTION")
         print("2. MODIFY QUESTION")
         print("3. DELETE QUESTION")
-        print("4. MAIN MENU")
+        print("4. GO BACK")
         print(75 * "-")
 
-        choice = getinput.getinput_between(1, 4)
+        choice = getinput.int_input_between(1, 4)
 
         if choice == 1:
             add_new_question(challenge_id)

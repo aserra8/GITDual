@@ -3,9 +3,7 @@ import mysql.connector
 from program import database
 
 
-# Class to store challenges data
 class Challenge:
-    # Constructor with challenge atributes
     def __init__(self, challenge_id, challenge_description):
         self.challenge_id = challenge_id
         self.challenge_description = challenge_description
@@ -23,12 +21,12 @@ class Challenge:
 
             os.system("cls")
             print("{:<15}{:<50}".format("ID", "DESCRIPTION"))
-            print(65 * "-")
+            print(66 * "-")
 
             for row in result:
                 print("{:<15}{:<50}".format(row[0], row[1]))
 
-            print(65 * "-")
+            print(66 * "-")
 
         except mysql.connector.Error:
             print("\nException while listing questions")
@@ -37,7 +35,6 @@ class Challenge:
                 cursor.close()
                 dbcon.close()
 
-    # Method to check if a challenge contains questions
     @staticmethod
     def contains_questions(challenge_id):
         dbcon = None
@@ -85,7 +82,6 @@ class Challenge:
                 cursor.close()
                 dbcon.close()
 
-    # Method to delete challenge and questions if it has any
     @staticmethod
     def delete_challenge(challenge_id):
         dbcon = None
@@ -110,7 +106,6 @@ class Challenge:
                 cursor.close()
                 dbcon.close()
 
-    # Method to add new challenge to database
     def add_challenge(self):
         dbcon = None
         cursor = None
@@ -136,7 +131,6 @@ class Challenge:
                 cursor.close()
                 dbcon.close()
 
-    # Method to check if challenge already exists in database
     @staticmethod
     def check_challenge(challenge_id):
         dbcon = None

@@ -1,14 +1,12 @@
 import os
-from program import database
 import mysql.connector
+from program import database
 
 
-# Function to print leaderboard
 def show_player_leaderboard():
     counter = 0
     dbcon = None
     cursor = None
-
     try:
         dbcon = database.connectdb()
         cursor = dbcon.cursor()

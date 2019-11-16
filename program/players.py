@@ -15,7 +15,7 @@ def delete_existing_player():
 
 def modify_existing_player():
     os.system("cls")
-    print(30 * "-", "MODIFY PLAYER", 30 * "-")
+    print(28 * "-", "MODIFY PLAYER", 28 * "-")
     player.Player.list_players()
 
     player_name = input("\nEnter player name: ")
@@ -24,32 +24,18 @@ def modify_existing_player():
         input("Enter a key to continue: ")
     elif player.Player.check_player_name(player_name):
         os.system("cls")
-        print(30 * "-", "MODIFY PLAYER", 30 * "-")
+        print(26 * "-", "MODIFY PLAYER", 27 * "-")
         try:
             option = int(input("\nField to be changed: 1 = PLAYER NAME / 2 = PLAYER PASSWORD / 3 = PLAYER SCORE: "))
             if 1 <= option <= 3:
                 if option == 1:
-                    while True:
-                        modification = input("\nNew player name: ")
-                        if len(modification) < 3:
-                            print("\nPlayer name is too short")
-                        elif len(modification) > 10:
-                            print("\nPlayer name is too long")
-                        else:
-                            break
+                    modification = getinput.string_input_between("Player name", 3, 10)
                 elif option == 2:
-                    while True:
-                        modification = input("New player password: ")
-                        if len(modification) < 5:
-                            print("\nPassword is too short")
-                        elif len(modification) > 15:
-                            print("\nPassword is too long")
-                        else:
-                            break
+                    modification = getinput.string_input_between("Player password", 3, 10)
                 else:
                     while True:
                         try:
-                            modification = int(input("New player score: "))
+                            modification = int(input("Player score: "))
                             if modification < 0:
                                 print("\nScore is too low")
                             else:
@@ -71,14 +57,14 @@ def modify_existing_player():
 def show_player_options():
     while True:
         os.system("cls")
-        print(30 * "-", "PLAYER OPTIONS", 30 * "-")
+        print(25 * "-", "PLAYER OPTIONS", 25 * "-")
         print("1. ADD NEW PLAYER")
         print("2. MODIFY PLAYER")
         print("3. DELETE PLAYER")
         print("4. GO BACK")
-        print(76 * "-")
+        print(66 * "-")
 
-        choice = getinput.getinput_between(1, 4)
+        choice = getinput.int_input_between(1, 4)
         if choice == 1:
             add_new_player(1)
         elif choice == 2:
@@ -89,10 +75,10 @@ def show_player_options():
             break
 
 
-# Function to show existing player menu
 def check_existing_player():
     os.system("cls")
-    print(30 * "-", "EXISTING PLAYER", 30 * "-")
+    print(25 * "-", "EXISTING PLAYER", 24 * "-")
+
     player_name = input("\nEnter player name: ")
     player_password = input("Enter player password: ")
 
@@ -104,29 +90,14 @@ def check_existing_player():
         input("Enter a key to continue: ")
 
 
-# Function to add new player
 def add_new_player(option):
     os.system("cls")
-    print(30 * "-", "NEW PLAYER", 30 * "-")
-    while True:
-        player_name = input("\nEnter player name: ")
-        if len(player_name) < 3:
-            print("\nPlayer name is too short")
-        elif len(player_name) > 10:
-            print("\nPlayer name is too long")
-        else:
-            break
+    print(27 * "-", "NEW PLAYER", 27 * "-")
 
-    while True:
-        player_password = input("Enter player password: ")
-        if len(player_password) < 5:
-            print("\nPassword is too short")
-        elif len(player_password) > 15:
-            print("\nPassword is too long")
-        else:
-            break
+    player_name = getinput.string_input_between("Player name", 3, 10)
+    player_password = getinput.string_input_between("Passowrd", 5, 15)
 
-    if player.Player.check_player(player_name, player_password):
+    if player.Player.check_player_name(player_name):
         print("\nPlayer name already exists")
         input("Enter a key to continue: ")
     else:
@@ -136,17 +107,16 @@ def add_new_player(option):
             return new_player
 
 
-# Function to show player login options
 def show_login():
     while True:
         os.system("cls")
-        print(30 * "-", "PLAYER MENU", 30 * "-")
+        print(27 * "-", "PLAYER MENU", 26 * "-")
         print("1. EXISTING PLAYER")
         print("2. ADD NEW PLAYER")
         print("3. EXIT")
-        print(73 * "-")
+        print(66 * "-")
 
-        choice = getinput.getinput_between(1, 3)
+        choice = getinput.int_input_between(1, 3)
 
         if choice == 1:
             current_player = check_existing_player()
