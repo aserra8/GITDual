@@ -48,6 +48,7 @@ class Question:
                             else:
                                 print("\nQuestion has already been completed")
                                 input("\nEnter a key to continue: ")
+                                break
                         else:
                             while True:
                                 try:

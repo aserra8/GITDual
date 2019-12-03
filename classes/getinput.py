@@ -12,9 +12,9 @@ def int_input_between(min_value, max_value):
     return user_input
 
 
-def string_input_between(name, min_length, max_length,):
+def string_input_between(name, min_length, max_length):
     while True:
-        user_input = input("\nEnter {}: ".format(name.lower()))
+        user_input = input("Enter {}: ".format(name.lower()))
         if len(user_input) < min_length:
             print("\n{} is too short".format(name))
         elif len(user_input) > max_length:

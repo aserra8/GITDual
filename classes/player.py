@@ -80,9 +80,6 @@ class Player:
 
             dbcon.commit()
 
-            print("\nPlayer modified successfully")
-            input("Enter a key to continue: ")
-
         except mysql.connector.Error:
             print("\nException while trying to modify player")
 
@@ -205,7 +202,7 @@ class Player:
             result = cursor.fetchall()
 
             os.system("cls")
-            print("{:<30}{:<30}{:>10}".format("USER ID", "PASSWORD", "SCORE"))
+            print("{:<30}{:<30}{:>10}".format("USER NAME", "PASSWORD", "SCORE"))
             print(70 * "-")
 
             for row in result:

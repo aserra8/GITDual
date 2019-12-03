@@ -91,13 +91,15 @@ def modify_existing_challenge():
 
 
 def add_new_challenge():
-    os.system("cls")
-    print(30 * "-", "NEW CHALLENGE", 30 * "-")
+    challenge.Challenge.list_challenge()
     try:
         challenge_id = int(input("\nEnter challenge ID: "))
         if not challenge.Challenge.check_challenge(challenge_id):
-            if len(str(challenge_id)) != 3:
-                print("\nChallenge ID must be a three digit number")
+            if challenge_id <= 0:
+                print("\nIncorrect challenge ID")
+                input("Enter a key to continue: ")
+            elif len(str(challenge_id)) > 2:
+                print("\nChallenge ID is too large")
                 input("Enter a key to continue: ")
             else:
                 while True:

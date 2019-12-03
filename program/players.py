@@ -1,4 +1,5 @@
 import os
+from getpass import getpass
 from classes import player, getinput
 
 
@@ -6,7 +7,10 @@ def delete_existing_player():
     player.Player.list_players()
 
     player_name = input("\nEnter player name: ")
-    if player.Player.check_player_name(player_name):
+    if player_name == "ADMIN":
+        print("\nThis player can not be deleted")
+        input("Enter a key to continue: ")
+    elif player.Player.check_player_name(player_name):
         player.Player.delete_player(player_name)
     else:
         print("\nPlayer does not exist")
@@ -31,7 +35,7 @@ def modify_existing_player():
                 if option == 1:
                     modification = getinput.string_input_between("Player name", 3, 10)
                 elif option == 2:
-                    modification = getinput.string_input_between("Player password", 3, 10)
+                    modification = getinput.string_input_between("New password", 3, 10)
                 else:
                     while True:
                         try:
@@ -43,6 +47,9 @@ def modify_existing_player():
                         except ValueError:
                             print("\nIncorrect format")
                 player.Player.modify_player(player_name, option, modification)
+
+                print("\nPlayer modified successfully")
+                input("Enter a key to continue: ")
             else:
                 print("\nIncorrect question ID")
                 input("Enter a key to continue: ")
@@ -75,12 +82,12 @@ def show_player_options():
             break
 
 
-def check_existing_player():
+def check_existing_player(text):
     os.system("cls")
-    print(25 * "-", "EXISTING PLAYER", 24 * "-")
+    print(25 * "-", text, 24 * "-")
 
     player_name = input("\nEnter player name: ")
-    player_password = input("Enter player password: ")
+    player_password = getpass("Enter player password: ")
 
     if player.Player.check_player(player_name, player_password):
         existing_player = player.Player(player_name, player_password)
@@ -94,8 +101,23 @@ def add_new_player(option):
     os.system("cls")
     print(27 * "-", "NEW PLAYER", 27 * "-")
 
-    player_name = getinput.string_input_between("Player name", 3, 10)
-    player_password = getinput.string_input_between("Passowrd", 5, 15)
+    while True:
+        player_name = input("\nEnter user name: ")
+        if len(player_name) < 3:
+            print("\nPlayer name is too short")
+        elif len(player_name) > 10:
+            print("\nPlayer name is too long")
+        else:
+            break
+
+    while True:
+        player_password = getpass("Enter player password: ")
+        if len(player_password) < 5:
+            print("\nPassword is too short")
+        elif len(player_password) > 15:
+            print("\nPassword is too long")
+        else:
+            break
 
     if player.Player.check_player_name(player_name):
         print("\nPlayer name already exists")
@@ -113,13 +135,14 @@ def show_login():
         print(27 * "-", "PLAYER MENU", 26 * "-")
         print("1. EXISTING PLAYER")
         print("2. ADD NEW PLAYER")
-        print("3. EXIT")
+        print("3. CHANGE PASSWORD")
+        print("4. EXIT")
         print(66 * "-")
 
         choice = getinput.int_input_between(1, 3)
 
         if choice == 1:
-            current_player = check_existing_player()
+            current_player = check_existing_player("EXISTING PLAYER")
             if current_player is not None:
                 break
         elif choice == 2:
@@ -127,6 +150,14 @@ def show_login():
             if current_player is not None:
                 break
         elif choice == 3:
+            current_player = check_existing_player("CHANGE PASSWORD")
+            if current_player is not None:
+                modification = getpass("New password: ")
+                player.Player.modify_player(current_player.player_name, 2, modification)
+
+                print("\nPassword modified successfully")
+                input("Enter a key to continue: ")
+        elif choice == 4:
             exit()
 
     return current_player
